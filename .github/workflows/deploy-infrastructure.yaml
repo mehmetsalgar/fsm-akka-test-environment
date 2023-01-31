@@ -1,5 +1,5 @@
-name: Deploy Infrastructure
-run-name: Release GA triggered via ${{ github.event_name }} by ${{ github.actor }}
+name: Deploy FSM Akka
+run-name: Deploy FSM Akka triggered via ${{ github.event_name }} by ${{ github.actor }}
 on:
   workflow_dispatch:
     inputs:
