@@ -1,0 +1,52 @@
+# CASSANDRA #
+cassandra:
+  datacenter:
+    size: 3
+# ELASTICSEARCH #
+elasticsearch:
+  name: "elasticsearch"
+  version: "7.16.3"
+  master:
+    replicaCount: 3
+    storageSize: 50Gi
+    storageClass:
+      enabled: false
+      #name: disk
+    resources:
+      requests:
+        memory: 16Gi
+        cpu: "4"
+      limits:
+        memory: 16Gi
+        cpu: "4"
+    noAffinity: false
+  ingest_data:
+    replicaCount: 3
+    storageSize: 50Gi
+    storageClass:
+      enabled: true
+      #name: disk
+    resources:
+      request:
+        memory: 16Gi
+        cpu: 4
+      limits:
+        memory: 16Gi
+        cpu: 4
+    noAffinity: false
+# KAFKA #
+kafka:
+  replicas: 3
+  version: 3.3.1
+  resources:
+    request:
+      memory: "4Gi"
+      cpu: "2"
+    limit:
+      memory: 16Gi
+      cpu: "2"
+  jvmOptions:
+    xms: 8Gi
+    xmx: 16Gi
+  topics:
+    replication-factor: 3

@@ -1,0 +1,26 @@
+address-check-application:
+  replicas: 3
+  resources:
+    limits:
+      cpu: 2
+credit-score-application:
+  replicas: 3
+  resources:
+    limits:
+      cpu: 2
+customer-relation-adapter:
+  replicas: 3
+  resources:
+    limits:
+      cpu: 2
+fraud-prevention-application:
+  replicas: 3
+  resources:
+    limits:
+      cpu: 2
+fsm-akka-4eyes-application:
+  nameOverride: "foureyes"
+  replicas: 3
+  resources:
+    limits:
+      cpu: 2

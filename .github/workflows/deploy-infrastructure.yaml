@@ -1,0 +1,41 @@
+name: Deploy Infrastructure
+run-name: Release GA triggered via ${{ github.event_name }} by ${{ github.actor }}
+on:
+  workflow_dispatch:
+    inputs:
+      services-umbrella-chart-version:
+        required: true
+        type: string
+      infrastructure-umbrella-chart-version:
+        required: true
+        type: string
+jobs:
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: 'master'
+      - name: Remove File
+        uses: JesseTG/rm@v1.0.3
+        with:
+          path: ./gitops/fsmakka/
+      - name: Setup helmfile
+        uses: mamezou-tech/setup-helmfile@v1.2.0
+      - name: DoTemplate
+        run: |
+          helmfile template --output-dir-template ./gitops/fsmakka
+          echo $(date +%F_%T) > ./gitops/fsmakka/create_helm_templates.txt
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: './gitops/fsmakka/'
+          message: 'Created Manifests for ${{ inputs.services-umbrella-chart-version }}'
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          tag: '${{ inputs.services-umbrella-chart-version }} --force'
+          tag_push: '--force'
+  helm-install-infrastructure:
+    uses: mehmetsalgar/fsm-akka-github-workflows/.github/workflows/helm-install.yaml@master
+    with:
+      helm-command: helm upgrade --install fsm-akka-infrastructure fsm-akka/fsm-akka-infrastructure -n fsmakka -f values-infrastructure.yaml --create-namespace --version=${{ inputs.infrastructure-umbrella-chart-version }}
