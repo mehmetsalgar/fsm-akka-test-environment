@@ -1,0 +1,46 @@
+name: Helm Umbrella Chart Release GA
+trigger: none
+
+parameters:
+  - name: infrastructureVersion
+    type: string
+  - name: servicesVersion
+    type: string
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: HELM_VARIABLES
+  - group: DOCKER_VARIABLES
+
+resources:
+  repositories:
+    - repository: fsm-akka-azure-pipelines
+      type: github
+      name: mehmetsalgar/fsm-akka-azure-pipelines
+      endpoint: mehmetsalgar
+
+stages:
+  - stage: Deploy
+    jobs:
+      - job: DeployInfrastructure
+        displayName: Deploy Infrastructure
+        steps:
+          - pwsh: |
+              helm registry login fsmakka.azurecr.io --username $(HELM_USER) --password $(HELM_PASSWORD)              
+              Write-Host "Command: helm upgrade --install fsm-akka-infrastructure fsm-akka-helm-infrastructure-chart-az -n fsmakka -f value-test.yaml  --version=$env:VERSION"
+              #helm upgrade --install fsm-akka-infrastructure fsm-akka-helm-infrastructure-chart-az -n fsmakka -f value-test.yaml  --version=$env:VERSION
+            displayName: Helm Install Infrastructure
+            env:
+              VERSION: ${{ parameters.infrastructureVersion }}
+      - job: DeployServices
+        dependsOn: DeployInfrastructure
+        displayName: Deploy Services
+        steps:
+          - bash: |
+              curl -L https://github.com/helmfile/helmfile/releases/download/v0.150.0/helmfile_0.150.0_linux_amd64.tar.gz > helmfile.tar.gz
+              tar -xvf helmfile.tar.gz
+              ls -al
+              chmod +x helmfile
+              ./helmfile template --state-values-set username=$(HELM_USER) --state-values-set password=$(HELM_PASSWORD) --output-dir-template ./gitops/fsmakka
