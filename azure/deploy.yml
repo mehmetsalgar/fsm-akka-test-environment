@@ -1,12 +1,6 @@
 name: Helm Umbrella Chart Release GA
 trigger: none
 
-parameters:
-  - name: infrastructureVersion
-    type: string
-  - name: servicesVersion
-    type: string
-
 pool:
   vmImage: ubuntu-latest
 
@@ -28,8 +22,10 @@ stages:
         displayName: Deploy Infrastructure
         steps:
           - pwsh: |
+              $file = 'infrastructure-version.txt'
+              $infrastructureVersion=(Get-Content -Path $file -TotalCount 1)
               helm registry login fsmakka.azurecr.io --username $(HELM_USER) --password $(HELM_PASSWORD)              
-              Write-Host "Command: helm upgrade --install fsm-akka-infrastructure fsm-akka-helm-infrastructure-chart-az -n fsmakka -f value-test.yaml  --version=$env:VERSION"
+              Write-Host "Command: helm upgrade --install fsm-akka-infrastructure fsm-akka-helm-infrastructure-chart-az -n fsmakka -f value-test.yaml  --version=$infrastructureVersion"
               #helm upgrade --install fsm-akka-infrastructure fsm-akka-helm-infrastructure-chart-az -n fsmakka -f value-test.yaml  --version=$env:VERSION
             displayName: Helm Install Infrastructure
             env:
