@@ -5,7 +5,7 @@ environments:
 
 repositories:
   - name: fsm-akka
-    url: fsmakka.azurecr.io
+    url: {{ .StateValues.url }}
     username: {{ .StateValues.username }}
     password: {{ .StateValues.password }}
     oci: true
