@@ -1,0 +1,5 @@
+username: ''
+pwsd: ''
+url: 'europe-west3-docker.pkg.dev/'
+path: 'fsmakka/fsm-akka-helm-ar/fsm-akka-helm-umbrella-chart'
+version: '2.6.0'
